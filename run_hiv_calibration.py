@@ -43,7 +43,7 @@ def run_calibration(n_trials=None, n_workers=None, do_save=True):
     # Make the sim
     sim = make_sim(verbose=-1, use_calib=False)
     data = pd.read_csv('data/kenya_hiv_calib.csv')
-    extra_results = ['hiv_n_diagnosed', 'hiv_n_on_art', 'n_alive']
+    extra_results = ['hiv.n_diagnosed', 'hiv.n_on_art', 'n_alive']
 
     # Make the calibration
     calib = sti.Calibration(
