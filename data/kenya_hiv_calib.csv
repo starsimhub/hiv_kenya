@@ -1,4 +1,4 @@
-time,n_alive,hiv_prevalence_15_49,hiv_n_infected,hiv_new_infections,hiv_new_deaths
+time,n_alive,hiv.prevalence_15_49,hiv.n_infected,hiv.new_infections,hiv.new_deaths
 1990,22771593,0.056,690000,220000,28000
 1991,23552946,0.069,900000,250000,38000
 1992,24283525,0.082,1100000,270000,50000
