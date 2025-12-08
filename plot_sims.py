@@ -41,7 +41,7 @@ def plot_hiv_sims(df, start_year=2000, end_year=2025, which='single', percentile
 
     # PLHIV
     ax = axes[pn]
-    resname = 'hiv_n_infected'
+    resname = 'hiv.n_infected'
     ax.scatter(hiv_data.year, hiv_data[resname], label='Data', color='k')
     y = get_y(dfplot, which, resname)
     line, = ax.plot(x, y, label='PLHIV')
@@ -57,7 +57,7 @@ def plot_hiv_sims(df, start_year=2000, end_year=2025, which='single', percentile
 
     # HIV prevalence
     ax = axes[pn]
-    resname = 'hiv_prevalence_15_49'
+    resname = 'hiv.prevalence_15_49'
     ax.scatter(hiv_data.year, hiv_data[resname] * 100, label='Data', color='k')
     x = dfplot.index
     y = get_y(dfplot, which, resname)
@@ -73,7 +73,7 @@ def plot_hiv_sims(df, start_year=2000, end_year=2025, which='single', percentile
 
     # Infections
     ax = axes[pn]
-    resname = 'hiv_new_infections'
+    resname = 'hiv.new_infections'
     ax.scatter(hiv_data.year, hiv_data[resname], label='UNAIDS', color='k')
     x = dfplot.index
     y = get_y(dfplot, which, resname)
@@ -90,7 +90,7 @@ def plot_hiv_sims(df, start_year=2000, end_year=2025, which='single', percentile
 
     # HIV deaths
     ax = axes[pn]
-    resname = 'hiv_new_deaths'
+    resname = 'hiv.new_deaths'
     ax.scatter(hiv_data.year, hiv_data[resname], label='UNAIDS', color='k')
     x = dfplot.index
     y = get_y(dfplot, which, resname)
@@ -107,8 +107,8 @@ def plot_hiv_sims(df, start_year=2000, end_year=2025, which='single', percentile
 
     # 90-90-90
     ax = axes[pn]
-    ax.scatter(hiv_data.year, hiv_data['hiv_n_infected'], color='k')  # label='UNAIDS',
-    resnames = {'PLHIV': 'hiv_n_infected', 'Dx': 'hiv_n_diagnosed', 'Treated': 'hiv_n_on_art'}
+    ax.scatter(hiv_data.year, hiv_data['hiv.n_infected'], color='k')  # label='UNAIDS',
+    resnames = {'PLHIV': 'hiv.n_infected', 'Dx': 'hiv.n_diagnosed', 'Treated': 'hiv.n_on_art'}
     for rlabel, rname in resnames.items():
         x = dfplot.index
         y = get_y(dfplot, which, rname)

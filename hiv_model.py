@@ -182,7 +182,7 @@ if __name__ == '__main__':
         if do_run:
             sim = make_sim(use_calib=use_calib, analyze_network=False, verbose=1/12)
             sim.run()
-            df = sim.to_df(resample='year', use_years=True, sep='_')  # Use dots to separate columns
+            df = sim.to_df(resample='year', use_years=True, sep='.')  # Use dots to separate columns
             df.index = df['timevec']
             if do_save:
                 sc.saveobj(f'results/kenya_sim.df', df)
