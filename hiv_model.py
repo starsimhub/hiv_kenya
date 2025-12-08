@@ -170,7 +170,7 @@ if __name__ == '__main__':
     do_save = True
     do_run = True
     do_plot = True
-    use_calib = False
+    use_calib = True
 
     to_run = [
         'run_sim',
