@@ -80,7 +80,7 @@ def make_sim(seed=1, stop=2030, verbose=1/12, analyzers=None, use_calib=True, an
         start=1985,
         stop=stop,
         use_migration=True,
-        # datafolder='data/',
+        datafolder='data/',
         demographics='kenya',
         diseases=hiv,
         rand_seed=seed,
