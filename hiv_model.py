@@ -49,7 +49,7 @@ def make_sim_pars(sim, calib_pars):
 def make_sim(seed=1, stop=2030, verbose=1/12, analyzers=None, use_calib=True, analyze_network=False, par_idx=0):
 
     nw = sti.StructuredSexual(
-        prop_f0=0.79,
+        prop_f0=0.8,
         prop_m0=0.75,
         f1_conc=0.15,
         m1_conc=0.15,
@@ -59,7 +59,7 @@ def make_sim(seed=1, stop=2030, verbose=1/12, analyzers=None, use_calib=True, an
 
     hiv = sti.HIV(
         beta_m2f=0.012,
-        eff_condom=0.5,
+        eff_condom=0.95,
         init_prev_data=pd.read_csv('data/init_prev_hiv.csv'),
         rel_init_prev=.5,
     )

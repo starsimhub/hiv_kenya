@@ -33,6 +33,7 @@ def run_calibration(n_trials=None, n_workers=None, do_save=True):
     # Define the calibration parameters
     calib_pars = dict(
         hiv_beta_m2f=dict(low=0.008, high=0.02, guess=0.012),
+        hiv_eff_condom=dict(low=0.5, high=0.95, guess=0.75),
         nw_prop_f0 = dict(low=0.55, high=0.9, guess=0.85),
         nw_prop_m0 = dict(low=0.50, high=0.9, guess=0.81),
         nw_f1_conc = dict(low=0.01, high=0.2, guess=0.01),
