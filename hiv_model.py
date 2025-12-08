@@ -173,8 +173,8 @@ if __name__ == '__main__':
     use_calib = True
 
     to_run = [
-        'run_sim',
-        # 'run_msim',
+        # 'run_sim',
+        'run_msim',
     ]
 
     if 'run_sim' in to_run:
