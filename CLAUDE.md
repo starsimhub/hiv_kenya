@@ -8,8 +8,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 # Run the model (single sim)
 python hiv_model.py
 
-# Run tests
+# Run tests (Python)
 cd tests && python test_model.py
+
+# Run tests (R) -- from repo root
+Rscript tests/test_model.R
 
 # Run calibration (slow; use debug=True in the file for quick local runs)
 python run_hiv_calibration.py
