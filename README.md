@@ -1,6 +1,6 @@
 # HIV Kenya
 
-Agent-based model of HIV transmission and intervention delivery in Kenya, built on [STIsim](https://github.com/starsimhub/stisim) and [Starsim](https://github.com/starsimhub/starsim). The model includes structured sexual networks with risk groups, HIV testing (FSW-targeted, general population, and opportunistic), ART, and PrEP.
+Agent-based model of HIV transmission and intervention delivery in Kenya, built on [HIVsim/STIsim](https://github.com/starsimhub/stisim) and [Starsim](https://github.com/starsimhub/starsim). The model includes structured sexual networks with risk groups, HIV testing (FSW-targeted, general population, and opportunistic), ART, and PrEP.
 
 Both Python and R interfaces are provided. The R interface uses [rstarsim](https://github.com/starsimhub/rstarsim), which calls the Python engine via reticulate.
 
