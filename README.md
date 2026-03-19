@@ -17,17 +17,25 @@ To install:
 pip install -e .
 ```
 
-or equivalently, `bash install_python.sh`. This will install Starsim, STIsim, and test dependencies into your current Python environment.
+or equivalently, `bash install_python.sh`. This will install Starsim and STIsim into your current Python environment.
 
 ### R environment (for R users only)
 
-To install everything for R, including using an R-managed Python environment, run:
+To install everything for R, including using an R-managed Python environment, run `bash install_R.sh`, or follow the steps below:
 
-```bash
-bash install_R.sh
+```r
+# Install core dependencies; takes some time
+install.packages(c("reticulate", "devtools"))
+devtools::install_github("starsimhub/rstarsim")
+
+# Install Starsim (also creates a Python environment; also takes time)
+library(starsim)
+init_starsim()
+
+# Install STIsim (does not take much time)
+library(reticulate)
+reticulate::py_install("stisim", pip = TRUE)
 ```
-
-This will install the R packages (`reticulate`, `devtools`, `testthat`, `rstarsim`), create an R-managed Python environment, and install `starsim` and `stisim` into it.
 
 On first use, `rstarsim` will set up a conda environment automatically if needed.
 
