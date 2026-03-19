@@ -2,33 +2,52 @@
 
 Agent-based model of HIV transmission and intervention delivery in Kenya, built on [HIVsim/STIsim](https://github.com/starsimhub/stisim) and [Starsim](https://github.com/starsimhub/starsim). The model includes structured sexual networks with risk groups, HIV testing (FSW-targeted, general population, and opportunistic), ART, and PrEP.
 
-Both Python and R interfaces are provided. The R interface uses [rstarsim](https://github.com/starsimhub/rstarsim), which calls the Python engine via reticulate.
+Both Python and R interfaces are provided. The R interface uses [rstarsim](https://github.com/starsimhub/rstarsim), which calls the Python engine via [reticulate](https://rstudio.github.io/reticulate/).
 
 
 ## Prerequisites
 
 ### Python environment
+ 
+If you are a Python user, do this step. If you are an R user, do this step if you want to use the same Python environment with R. Alternatively, you do not need to install the Python packages directly if you are letting R manage your Python environment (see next section).
 
-The Python packages are required regardless of whether you use the R or Python interface:
+To install:
 
 ```bash
 pip install -e .
 ```
 
-### R packages (for R users)
+This will install Starsim and STIsim into your current Python environment.
+
+### R environment (for R users only)
+
+To install everything for R, including using an R-managed Python environment, run:
 
 ```r
+# Install core dependencies; takes some time
 install.packages(c("reticulate", "devtools"))
 devtools::install_github("starsimhub/rstarsim")
+
+# Install Starsim (also creates a Python environment; also takes time)
+library(starsim)
+init_starsim()
+
+# Install STIsim (does not take much time)
+library(reticulate)
+reticulate::py_install("stisim", pip = TRUE)
 ```
 
-On first use, `rstarsim` will set up a conda environment automatically if needed. To use an existing environment instead:
+On first use, `rstarsim` will set up a conda environment automatically if needed.
+
+To use an existing environment instead (e.g., the one you used `pip install` with above):
 
 ```r
 # Optional custom environment
 library(starsim)
 load_starsim("my_env_name")
 ```
+
+where `"my_env_name"` is the name of your Python environment.
 
 
 ## Quick start (R)
