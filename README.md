@@ -8,7 +8,7 @@ Both Python and R interfaces are provided. The R interface uses [rstarsim](https
 ## Prerequisites
 
 ### Python environment
- 
+
 If you are a Python user, do this step. If you are an R user, do this step if you want to use the same Python environment with R. Alternatively, you do not need to install the Python packages directly if you are letting R manage your Python environment (see next section).
 
 To install:
@@ -17,25 +17,17 @@ To install:
 pip install -e .
 ```
 
-This will install Starsim and STIsim into your current Python environment.
+or equivalently, `bash install_python.sh`. This will install Starsim, STIsim, and test dependencies into your current Python environment.
 
 ### R environment (for R users only)
 
 To install everything for R, including using an R-managed Python environment, run:
 
-```r
-# Install core dependencies; takes some time
-install.packages(c("reticulate", "devtools"))
-devtools::install_github("starsimhub/rstarsim")
-
-# Install Starsim (also creates a Python environment; also takes time)
-library(starsim)
-init_starsim()
-
-# Install STIsim (does not take much time)
-library(reticulate)
-reticulate::py_install("stisim", pip = TRUE)
+```bash
+bash install_R.sh
 ```
+
+This will install the R packages (`reticulate`, `devtools`, `testthat`, `rstarsim`), create an R-managed Python environment, and install `starsim` and `stisim` into it.
 
 On first use, `rstarsim` will set up a conda environment automatically if needed.
 
@@ -211,6 +203,8 @@ hiv_kenya/
   plot_sims.py              # Plotting functions
   plot_calibrations.py      # Plot calibration results
   utils.py                  # Plotting utilities
+  install_python.sh         # Install Python dependencies
+  install_R.sh              # Install R dependencies
   data/
     init_prev_hiv.csv       # Initial HIV prevalence by risk group/sex/SW status
     condom_use.csv           # Condom use by partnership type over time
