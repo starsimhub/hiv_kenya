@@ -12,7 +12,7 @@ Both Python and R interfaces are provided. The R interface uses [rstarsim](https
 The Python packages are required regardless of whether you use the R or Python interface:
 
 ```bash
-pip install stisim
+pip install -e .
 ```
 
 ### R packages (for R users)

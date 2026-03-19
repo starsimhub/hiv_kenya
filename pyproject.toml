@@ -1,8 +1,16 @@
 [project]
-name = "hiv-kenya"
+name = "hiv_kenya"
 version = "0.1.0"
-description = "Agent-based HIV transmission model for Kenya"
-requires-python = ">=3.9"
+description = "HIV transmission model for Kenya based on Starsim"
+requires-python = ">=3.10"
+license = {file = "LICENSE"}
+
+authors = [
+  { name = "Robyn Stuart", email = "info@starsim.org" },
+  { name = "Adam Akullian" },
+  { name = "Cliff Kerr" },
+]
+
 dependencies = [
     "starsim",
     "stisim",
