@@ -1,0 +1,25 @@
+[project]
+name = "hiv-kenya"
+version = "0.1.0"
+description = "Agent-based HIV transmission model for Kenya"
+requires-python = ">=3.9"
+dependencies = [
+    "starsim",
+    "stisim",
+    "sciris",
+]
+
+[project.optional-dependencies]
+test = [
+    "pytest",
+    "pytest-env",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+filterwarnings = [
+    "ignore::pytest.PytestReturnNotNoneWarning",
+]
+
+[tool.pytest-env]
+SCIRIS_BACKEND = "agg"
