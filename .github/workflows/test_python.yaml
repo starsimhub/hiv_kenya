@@ -20,7 +20,7 @@ jobs:
           python-version: '3.13'
 
       - name: Install dependencies
-        run: pip install ".[test]"
+        run: bash install_python.sh
 
       - name: Run tests
         run: pytest -v

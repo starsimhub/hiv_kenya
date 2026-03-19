@@ -21,14 +21,12 @@ jobs:
           python-version: '3.13'
 
       - name: Install Python dependencies
-        run: pip install ".[test]"
+        run: bash install_python.sh
 
       - uses: r-lib/actions/setup-r@v2
 
       - name: Install R dependencies
-        run: |
-          Rscript -e 'install.packages(c("reticulate", "testthat", "remotes"), repos = "https://cloud.r-project.org")'
-          Rscript -e 'remotes::install_github("starsimhub/rstarsim")'
+        run: bash install_R.sh --skip-python
 
       - name: Run tests
         run: Rscript -e "testthat::test_file('tests/test_model.R')"

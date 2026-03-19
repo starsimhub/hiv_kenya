@@ -23,6 +23,13 @@ test = [
     "pytest-env",
 ]
 
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+py-modules = ["hiv_model"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 filterwarnings = [
