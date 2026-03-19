@@ -2,7 +2,7 @@
 #'
 #' R translation of hiv_model.py, using reticulate to call stisim/starsim.
 #' Requires: install.packages("reticulate")
-#'           devtools::install_github("starsimhub/rstarsim")
+#'           pak::pak("starsimhub/rstarsim")
 #'
 #' Set working directory to the repo root before sourcing this file.
 

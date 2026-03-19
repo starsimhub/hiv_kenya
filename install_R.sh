@@ -2,7 +2,7 @@
 # Install R dependencies for the HIV Kenya model.
 # Run from the repo root:  bash install_R.sh
 #
-# This installs the R packages (reticulate, devtools, testthat, rstarsim)
+# This installs the R packages (reticulate, pak, testthat, rstarsim)
 # and sets up a Python environment managed by R with starsim and stisim.
 #
 # Usage:
@@ -11,11 +11,11 @@
 
 set -e
 
-echo "Installing R packages (reticulate, devtools, testthat)..."
-Rscript -e 'install.packages(c("reticulate", "devtools", "testthat"), repos = "https://cloud.r-project.org")'
+echo "Installing R packages (reticulate, pak, testthat)..."
+Rscript -e 'install.packages(c("reticulate", "pak", "testthat"), repos = "https://cloud.r-project.org")'
 
 echo "Installing rstarsim from GitHub..."
-Rscript -e 'devtools::install_github("starsimhub/rstarsim")'
+Rscript -e 'pak::pak("starsimhub/rstarsim")'
 
 if [ "$1" != "--skip-python" ]; then
   echo "Initializing Starsim (creates a Python environment if needed)..."

@@ -25,8 +25,8 @@ To install everything for R, including using an R-managed Python environment, ru
 
 ```r
 # Install core dependencies; takes some time
-install.packages(c("reticulate", "devtools"))
-devtools::install_github("starsimhub/rstarsim")
+install.packages(c("reticulate", "pak"))
+pak::pak("starsimhub/rstarsim")
 
 # Install Starsim (also creates a Python environment; also takes time)
 library(starsim)
