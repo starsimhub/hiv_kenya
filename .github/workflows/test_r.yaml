@@ -5,6 +5,8 @@ on:
     - cron: '0 0 * * *'  # midnight UTC daily
   pull_request:
     branches: [main]
+  workflow_dispatch:
+  workflow_call:
 
 jobs:
   test:
@@ -14,8 +16,9 @@ jobs:
       - uses: actions/checkout@v4
 
       - uses: actions/setup-python@v5
+        id: setup-python
         with:
-          python-version: '3.12'
+          python-version: '3.13'
 
       - name: Install Python dependencies
         run: pip install ".[test]"
@@ -29,3 +32,5 @@ jobs:
 
       - name: Run tests
         run: Rscript -e "testthat::test_file('tests/test_model.R')"
+        env:
+          RETICULATE_PYTHON: ${{ steps.setup-python.outputs.python-path }}
