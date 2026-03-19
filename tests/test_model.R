@@ -20,8 +20,8 @@ test_that("HIV model runs and produces valid results", {
 
   # Extract results
   res  <- sim$results$hiv
-  prev <- as.numeric(res$prevalence)
-  art  <- as.numeric(res$n_on_art)
+  prev <- as.numeric(res$prevalence$values)
+  art  <- as.numeric(res$n_on_art$values)
 
   # Check prevalence
   expect_true(all(prev > 0), label = "Expect nonzero prevalence at all timepoints")
