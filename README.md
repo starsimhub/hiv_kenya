@@ -155,6 +155,11 @@ ggplot(df, aes(x = timevec)) +
 ```
 
 
+## Syncing Python and R
+
+A [Claude Code](https://claude.ai/code) agent (`@sync-r-py`) keeps `hiv_model.py` and `hiv_model.R` in sync. In a Claude Code conversation, type `@sync-r-py` to invoke it. It compares git histories, identifies discrepancies, applies changes to the out-of-date file, and runs tests.
+
+
 ## Repository structure
 
 ```

@@ -55,3 +55,7 @@ Calibration parameters use prefixes that map to model components:
 ### Results persistence
 
 Simulation outputs are saved with `sc.saveobj()` as sciris binary objects (`.obj` or `.df` extension). Load with `sc.loadobj()`. DataFrames are resampled to yearly frequency via `sim.to_df(resample='year', use_years=True, sep='.')`.
+
+### Syncing Python and R (`@sync-r-py`)
+
+A Claude Code agent keeps `hiv_model.py` and `hiv_model.R` in sync. Invoke it by typing `@sync-r-py` in a Claude Code conversation. It will compare git histories, identify discrepancies, apply changes to the out-of-date file, and run tests.
