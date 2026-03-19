@@ -12,7 +12,7 @@ Both Python and R interfaces are provided. The R interface uses [rstarsim](https
 The Python packages are required regardless of whether you use the R or Python interface:
 
 ```bash
-pip install starsim stisim sciris
+pip install stisim
 ```
 
 ### R packages (for R users)
@@ -25,6 +25,7 @@ devtools::install_github("starsimhub/rstarsim")
 On first use, `rstarsim` will set up a conda environment automatically if needed. To use an existing environment instead:
 
 ```r
+# Optional custom environment
 library(starsim)
 load_starsim("my_env_name")
 ```
@@ -152,6 +153,27 @@ df <- as.data.frame(df)
 ggplot(df, aes(x = timevec)) +
   geom_line(aes(y = hiv.prevalence_15_49 * 100)) +
   labs(x = "Year", y = "HIV prevalence (%)", title = "Kenya HIV prevalence (15-49)")
+```
+
+## Running tests
+
+Tests are available for both Python and R.
+
+For R:
+```bash
+Rscript tests/test_model.R
+```
+
+For Python:
+```bash
+python tests/test_model.py
+```
+
+or
+
+```bash
+cd tests
+pytest
 ```
 
 
