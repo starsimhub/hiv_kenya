@@ -88,7 +88,7 @@ make_custom_interventions <- function(test_years = NULL) {
 
   # ART
   data_path <- file.path(getwd(), "data")
-  n_art <- pd$read_csv(file.path(data_path, "n_art.csv"))$set_index("year")
+  n_art <- pd$read_csv(file.path(data_path, "n_art.csv"))
   art   <- sti$ART(coverage_data = n_art, future_coverage = list(year = 2024L, prop = 0.97))
 
   # PrEP
