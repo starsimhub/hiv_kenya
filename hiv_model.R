@@ -2,7 +2,7 @@
 #'
 #' R translation of hiv_model.py, using reticulate to call stisim/starsim.
 #' Requires: install.packages("reticulate")
-#'           devtools::install_github("starsimhub/rstarsim")
+#'           pak::pak("starsimhub/rstarsim")
 #'
 #' Set working directory to the repo root before sourcing this file.
 
@@ -88,7 +88,7 @@ make_custom_interventions <- function(test_years = NULL) {
 
   # ART
   data_path <- file.path(getwd(), "data")
-  n_art <- pd$read_csv(file.path(data_path, "n_art.csv"))$set_index("year")
+  n_art <- pd$read_csv(file.path(data_path, "n_art.csv"))
   art   <- sti$ART(coverage_data = n_art, future_coverage = list(year = 2024L, prop = 0.97))
 
   # PrEP
@@ -175,7 +175,7 @@ make_sim <- function(...) {
     list(
       location      = "kenya",
       diseases      = "hiv",
-      data_path     = file.path(getwd(), "data"),
+      datafolder    = file.path(getwd(), "data"),
       sim_pars      = sim_pars,
       nw_pars       = nw_pars,
       sti_pars      = sti_pars,
@@ -282,11 +282,11 @@ run_main <- function() {
   do_save   <- TRUE
   do_run    <- TRUE
   do_plot   <- TRUE
-  use_calib <- TRUE
+  use_calib <- FALSE
 
   to_run <- c(
-    # "run_sim",
-    "run_msim"
+    "run_sim"
+    # "run_msim"
   )
 
   if ("run_sim" %in% to_run) {
