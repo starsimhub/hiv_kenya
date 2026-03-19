@@ -42,7 +42,7 @@ load_starsim()
 source("hiv_model.R")
 
 # Create and run a single simulation
-sim <- make_sim(verbose = 1/12)
+sim <- make_sim()
 sim$run()
 
 # View results
