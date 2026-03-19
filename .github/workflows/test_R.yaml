@@ -36,6 +36,6 @@ jobs:
         run: Rscript -e 'pak::pak("starsimhub/rstarsim")'
 
       - name: Run tests
-        run: Rscript -e "testthat::test_file('tests/test_model.R')"
+        run: Rscript -e "testthat::test_dir('tests', stop_on_failure = TRUE)"
         env:
           RETICULATE_PYTHON: ${{ steps.setup-python.outputs.python-path }}
