@@ -7,8 +7,9 @@
 
 library(testthat)
 
-# Source the model (working directory must be repo root)
-source(file.path(getwd(), "hiv_model.R"))
+# Source the model (works from repo root or tests/)
+model_file <- if (file.exists("hiv_model.R")) "hiv_model.R" else file.path("..", "hiv_model.R")
+source(model_file)
 
 
 test_that("HIV model runs and produces valid results", {
