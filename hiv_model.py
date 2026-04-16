@@ -69,11 +69,17 @@ def make_custom_interventions(test_years=None):
     def low_cd4_eligibility(sim):
         return (sim.diseases.hiv.cd4 < 200) & ~sim.diseases.hiv.diagnosed
 
+    # ANC testing: test undiagnosed pregnant women in first trimester
+    anc_eligibility = lambda sim: sim.demographics.pregnancy.tri1_uids[
+        ~sim.diseases.hiv.diagnosed[sim.demographics.pregnancy.tri1_uids]
+    ]
+
     # Testing
     testing = [
         sti.HIVTest(years=test_years, test_prob_data=fsw_prob, name='fsw_testing', eligibility=fsw_eligibility, label='fsw_testing'),
         sti.HIVTest(years=test_years, test_prob_data=gp_prob, name='other_testing', eligibility=other_eligibility, label='other_testing'),
         sti.HIVTest(years=test_years, test_prob_data=low_cd4_prob, name='low_cd4_testing', eligibility=low_cd4_eligibility, label='low_cd4_testing'),
+        sti.HIVTest(test_prob_data=0.9, dt_scale=False, name='anc_testing', eligibility=anc_eligibility, label='anc_testing'),
     ]
 
     # ART
