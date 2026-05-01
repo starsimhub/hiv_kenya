@@ -86,11 +86,11 @@ make_custom_interventions <- function(test_years = NULL) {
                 name = "low_cd4_testing", eligibility = low_cd4_eligibility, label = "low_cd4_testing")
   )
 
-  # ART
+  # ART — use index_col= to avoid pandas chaining (reticulate auto-converts chained results)
   data_path <- file.path(getwd(), "data")
-  n_art <- pd$read_csv(file.path(data_path, "n_art.csv"))$set_index("year")
-  n_art["p_art"] <- np$nan
-  n_art$loc[2025:nrow(n_art), "p_art"] <- 0.97  # Switch to proportion target after historical data ends
+  n_art        <- pd$read_csv(file.path(data_path, "n_art.csv"), index_col = "year")
+  n_art$p_art  <- NA_real_
+  n_art$p_art[as.integer(rownames(n_art)) >= 2025L] <- 0.97
   art   <- sti$ART(coverage = n_art)
 
   # PrEP
