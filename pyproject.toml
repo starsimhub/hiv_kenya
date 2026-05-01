@@ -1,0 +1,40 @@
+[project]
+name = "hiv_kenya"
+version = "0.1.0"
+description = "HIV transmission model for Kenya based on Starsim"
+requires-python = ">=3.10"
+license = {file = "LICENSE"}
+
+authors = [
+  { name = "Robyn Stuart", email = "info@starsim.org" },
+  { name = "Adam Akullian" },
+  { name = "Cliff Kerr" },
+]
+
+dependencies = [
+    "starsim",
+    "stisim",
+    "sciris",
+]
+
+[project.optional-dependencies]
+test = [
+    "pytest",
+    "pytest-env",
+]
+
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+py-modules = ["hiv_model"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+filterwarnings = [
+    "ignore::pytest.PytestReturnNotNoneWarning",
+]
+
+[tool.pytest-env]
+SCIRIS_BACKEND = "agg"

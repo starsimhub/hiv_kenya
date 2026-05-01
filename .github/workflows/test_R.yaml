@@ -1,0 +1,41 @@
+name: R Tests
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # midnight UTC daily
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+  workflow_call:
+
+jobs:
+  r-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        id: setup-python
+        with:
+          python-version: '3.12'
+
+      - name: Install Python dependencies
+        run: bash install_python.sh
+
+      - uses: r-lib/actions/setup-r@v2
+
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          packages: |
+            any::reticulate
+            any::testthat
+          cache: true
+
+      - name: Install rstarsim
+        run: Rscript -e 'pak::pak("starsimhub/rstarsim")'
+
+      - name: Run tests
+        run: Rscript -e "testthat::test_dir('tests', stop_on_failure = TRUE)"
+        env:
+          RETICULATE_PYTHON: ${{ steps.setup-python.outputs.python-path }}

@@ -1,33 +1,53 @@
 # HIV Kenya
 
-Agent-based model of HIV transmission and intervention delivery in Kenya, built on [STIsim](https://github.com/starsimhub/stisim) and [Starsim](https://github.com/starsimhub/starsim). The model includes structured sexual networks with risk groups, HIV testing (FSW-targeted, general population, and opportunistic), ART, and PrEP.
+Agent-based model of HIV transmission and intervention delivery in Kenya, built on [HIVsim/STIsim](https://github.com/starsimhub/stisim) and [Starsim](https://github.com/starsimhub/starsim). The model includes structured sexual networks with risk groups, HIV testing (FSW-targeted, general population, and opportunistic), ART, and PrEP.
 
-Both Python and R interfaces are provided. The R interface uses [rstarsim](https://github.com/starsimhub/rstarsim), which calls the Python engine via reticulate.
+Both Python and R interfaces are provided. The R interface uses [rstarsim](https://github.com/starsimhub/rstarsim), which calls the Python engine via [reticulate](https://rstudio.github.io/reticulate/).
 
 
 ## Prerequisites
 
 ### Python environment
 
-The Python packages are required regardless of whether you use the R or Python interface:
+If you are a Python user, do this step. If you are an R user, do this step if you want to use the same Python environment with R. Alternatively, you do not need to install the Python packages directly if you are letting R manage your Python environment (see next section).
+
+To install:
 
 ```bash
-pip install starsim stisim sciris
+pip install -e .
 ```
 
-### R packages (for R users)
+or equivalently, `bash install_python.sh`. This will install Starsim and STIsim into your current Python environment.
+
+### R environment (for R users only)
+
+To install everything for R, including using an R-managed Python environment, run `bash install_R.sh`, or follow the steps below:
 
 ```r
-install.packages(c("reticulate", "devtools"))
-devtools::install_github("starsimhub/rstarsim")
+# Install core dependencies; takes some time
+install.packages(c("reticulate", "pak"))
+pak::pak("starsimhub/rstarsim")
+
+# Install Starsim (also creates a Python environment; also takes time)
+library(starsim)
+init_starsim()
+
+# Install STIsim (does not take much time)
+library(reticulate)
+reticulate::py_install("stisim", pip = TRUE)
 ```
 
-On first use, `rstarsim` will set up a conda environment automatically if needed. To use an existing environment instead:
+On first use, `rstarsim` will set up a conda environment automatically if needed.
+
+To use an existing environment instead (e.g., the one you used `pip install` with above):
 
 ```r
+# Optional custom environment
 library(starsim)
 load_starsim("my_env_name")
 ```
+
+where `"my_env_name"` is the name of your Python environment.
 
 
 ## Quick start (R)
@@ -41,7 +61,7 @@ load_starsim()
 source("hiv_model.R")
 
 # Create and run a single simulation
-sim <- make_sim(verbose = 1/12)
+sim <- make_sim()
 sim$run()
 
 # View results
@@ -154,6 +174,32 @@ ggplot(df, aes(x = timevec)) +
   labs(x = "Year", y = "HIV prevalence (%)", title = "Kenya HIV prevalence (15-49)")
 ```
 
+## Running tests
+
+Tests are available for both Python and R.
+
+For R:
+```bash
+Rscript tests/test_model.R
+```
+
+For Python:
+```bash
+python tests/test_model.py
+```
+
+or
+
+```bash
+cd tests
+pytest
+```
+
+
+## Syncing Python and R
+
+A [Claude Code](https://claude.ai/code) agent (`@sync-r-py`) keeps `hiv_model.py` and `hiv_model.R` in sync. In a Claude Code conversation, type `@sync-r-py` to invoke it. It compares git histories, identifies discrepancies, applies changes to the out-of-date file, and runs tests.
+
 
 ## Repository structure
 
@@ -165,6 +211,8 @@ hiv_kenya/
   plot_sims.py              # Plotting functions
   plot_calibrations.py      # Plot calibration results
   utils.py                  # Plotting utilities
+  install_python.sh         # Install Python dependencies
+  install_R.sh              # Install R dependencies
   data/
     init_prev_hiv.csv       # Initial HIV prevalence by risk group/sex/SW status
     condom_use.csv           # Condom use by partnership type over time

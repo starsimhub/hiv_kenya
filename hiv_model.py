@@ -118,12 +118,12 @@ def make_sim(**kwargs):
 
     # Default analyzers
     analyzers = sc.tolist(kwargs.pop('analyzers', []))
-    analyzers += sti.sw_stats(diseases=['hiv'])
+    analyzers += [sti.sw_stats(diseases=['hiv'])]
 
     sim = sti.Sim(
         location='kenya',
         diseases='hiv',
-        data_path=sc.thispath() / 'data',
+        datafolder=sc.thispath() / 'data',
         sim_pars=sim_pars,
         nw_pars=nw_pars,
         sti_pars=sti_pars,
@@ -202,11 +202,11 @@ if __name__ == '__main__':
     do_save = True
     do_run = True
     do_plot = True
-    use_calib = True
+    use_calib = False
 
     to_run = [
-        # 'run_sim',
-        'run_msim',
+        'run_sim',
+        # 'run_msim',
     ]
 
     if 'run_sim' in to_run:
