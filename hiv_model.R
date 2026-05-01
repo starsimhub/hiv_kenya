@@ -86,12 +86,17 @@ make_custom_interventions <- function(test_years = NULL) {
                 name = "low_cd4_testing", eligibility = low_cd4_eligibility, label = "low_cd4_testing")
   )
 
-  # ART — use index_col= to avoid pandas chaining (reticulate auto-converts chained results)
-  data_path <- file.path(getwd(), "data")
-  n_art        <- pd$read_csv(file.path(data_path, "n_art.csv"), index_col = "year")
-  n_art$p_art  <- NA_real_
-  n_art$p_art[as.integer(rownames(n_art)) >= 2025L] <- 0.97
-  art   <- sti$ART(coverage = n_art)
+  # ART — build coverage DataFrame in pure R then fix index type before passing to Python.
+  # Reticulate auto-converts pd$read_csv() results to R data.frame (breaking method chains),
+  # and converts R character row names back to a pandas string index (breaking year comparisons).
+  data_path    <- file.path(getwd(), "data")
+  n_art_r      <- read.csv(file.path(data_path, "n_art.csv"))
+  n_art_r$p_art <- NA_real_
+  n_art_r$p_art[n_art_r$year >= 2025L] <- 0.97
+  n_art        <- r_to_py(n_art_r)
+  n_art        <- n_art$set_index("year")
+  n_art$index  <- n_art$index$astype("int64")
+  art          <- sti$ART(coverage = n_art)
 
   # PrEP
   prep <- sti$Prep(
