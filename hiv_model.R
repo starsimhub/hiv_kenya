@@ -46,7 +46,7 @@ make_custom_interventions <- function(test_years = NULL) {
   #' Create custom interventions for Kenya: HIV testing, ART, and PrEP.
   #'
   #' ART is created here (rather than auto-loaded from art_coverage.csv)
-  #' to allow setting future_coverage.
+  #' using a dual-column DataFrame (n_art + p_art) for mixed-format coverage.
   #'
   #' @param test_years Integer vector of years for testing coverage. Default: 1990:2050.
   #' @return List of intervention instances.
@@ -89,7 +89,9 @@ make_custom_interventions <- function(test_years = NULL) {
   # ART
   data_path <- file.path(getwd(), "data")
   n_art <- pd$read_csv(file.path(data_path, "n_art.csv"))$set_index("year")
-  art   <- sti$ART(coverage_data = n_art, future_coverage = list(year = 2024L, prop = 0.97))
+  n_art["p_art"] <- np$nan
+  n_art$loc[2025:nrow(n_art), "p_art"] <- 0.97  # Switch to proportion target after historical data ends
+  art   <- sti$ART(coverage = n_art)
 
   # PrEP
   prep <- sti$Prep(
@@ -153,7 +155,7 @@ make_sim <- function(...) {
   #' Create a Kenya HIV simulation.
   #'
   #' Uses data_path to auto-load init_prev and condom_use data via DataLoader.
-  #' Custom interventions (testing, ART with future_coverage, PrEP) are created
+  #' Custom interventions (testing, ART with mixed-format coverage, PrEP) are created
 
   #' separately and merged with any user-provided interventions.
   #'
