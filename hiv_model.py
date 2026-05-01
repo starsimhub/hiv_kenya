@@ -91,8 +91,7 @@ def make_custom_interventions(test_years=None):
 
     # PrEP
     prep = sti.Prep(
-        coverage=[0, 0.01, 0.5, 0.8],
-        years=[2004, 2005, 2015, 2025],
+        coverage={'year': [2004, 2005, 2015, 2025], 'value': [0, 0.01, 0.5, 0.8]},
         eff_prep=0.8,
     )
 
@@ -118,12 +117,12 @@ def make_sim(**kwargs):
 
     # Default analyzers
     analyzers = sc.tolist(kwargs.pop('analyzers', []))
-    analyzers += sti.sw_stats(diseases=['hiv'])
+    analyzers += [sti.sw_stats(diseases=['hiv'])]
 
     sim = sti.Sim(
         location='kenya',
         diseases='hiv',
-        data_path=sc.thispath() / 'data',
+        datafolder=sc.thispath() / 'data',
         sim_pars=sim_pars,
         nw_pars=nw_pars,
         sti_pars=sti_pars,

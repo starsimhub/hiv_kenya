@@ -95,8 +95,7 @@ make_custom_interventions <- function(test_years = NULL) {
 
   # PrEP
   prep <- sti$Prep(
-    coverage = c(0, 0.01, 0.5, 0.8),
-    years    = c(2004L, 2005L, 2015L, 2025L),
+    coverage = list(year = c(2004L, 2005L, 2015L, 2025L), value = c(0, 0.01, 0.5, 0.8)),
     eff_prep = 0.8
   )
 
