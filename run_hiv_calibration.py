@@ -15,7 +15,7 @@ os.environ.update(
 import sciris as sc
 import stisim as sti
 import pandas as pd
-from hiv_model import make_sim, make_sim_pars
+from hiv_model import make_sim
 
 
 # Run settings
@@ -32,24 +32,25 @@ def run_calibration(n_trials=None, n_workers=None, do_save=True):
 
     # Define the calibration parameters
     calib_pars = dict(
-        hiv_beta_m2f=dict(low=0.008, high=0.02, guess=0.012),
-        hiv_eff_condom=dict(low=0.5, high=0.95, guess=0.75),
-        nw_prop_f0 = dict(low=0.55, high=0.9, guess=0.85),
-        nw_prop_m0 = dict(low=0.50, high=0.9, guess=0.81),
-        nw_f1_conc = dict(low=0.01, high=0.2, guess=0.01),
-        nw_m1_conc = dict(low=0.01, high=0.2, guess=0.01),
-        nw_p_pair_form = dict(low=0.4, high=0.9, guess=0.5),
+        hiv=dict(
+            beta_m2f=  dict(low=0.008, high=0.02, guess=0.012),
+            eff_condom=dict(low=0.5, high=0.95, guess=0.75),
+        ),
+        structuredsexual=dict(
+            prop_f0=    dict(low=0.55, high=0.9, guess=0.85),
+            prop_m0=    dict(low=0.50, high=0.9, guess=0.81),
+            f1_conc=    dict(low=0.01, high=0.2, guess=0.01),
+            m1_conc=    dict(low=0.01, high=0.2, guess=0.01),
+            p_pair_form=dict(low=0.4, high=0.9, guess=0.5),
+        ),
     )
 
-    # Make the sim
     sim = make_sim(verbose=-1)
     data = pd.read_csv('data/kenya_hiv_calib.csv')
     extra_results = ['hiv.n_diagnosed', 'hiv.n_on_art', 'n_alive']
 
-    # Make the calibration
     calib = sti.Calibration(
         calib_pars=calib_pars,
-        build_fn=make_sim_pars,
         sim=sim,
         extra_results=extra_results,
         data=data,

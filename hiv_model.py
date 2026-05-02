@@ -40,7 +40,7 @@ def make_custom_interventions(test_years=None):
     Create custom interventions for Kenya: HIV testing, ART, and PrEP.
 
     Note: ART is created here (rather than auto-loaded from art_coverage.csv)
-    to allow setting future_coverage.
+    using a dual-column DataFrame (n_art + p_art) for mixed-format coverage.
 
     Args:
         test_years (array): Years for testing coverage. Default: 1990-2050.
@@ -69,17 +69,25 @@ def make_custom_interventions(test_years=None):
     def low_cd4_eligibility(sim):
         return (sim.diseases.hiv.cd4 < 200) & ~sim.diseases.hiv.diagnosed
 
+    # ANC testing: test undiagnosed pregnant women in first trimester
+    anc_eligibility = lambda sim: sim.demographics.pregnancy.tri1_uids[
+        ~sim.diseases.hiv.diagnosed[sim.demographics.pregnancy.tri1_uids]
+    ]
+
     # Testing
     testing = [
         sti.HIVTest(years=test_years, test_prob_data=fsw_prob, name='fsw_testing', eligibility=fsw_eligibility, label='fsw_testing'),
         sti.HIVTest(years=test_years, test_prob_data=gp_prob, name='other_testing', eligibility=other_eligibility, label='other_testing'),
         sti.HIVTest(years=test_years, test_prob_data=low_cd4_prob, name='low_cd4_testing', eligibility=low_cd4_eligibility, label='low_cd4_testing'),
+        sti.HIVTest(test_prob_data=0.9, dt_scale=False, name='anc_testing', eligibility=anc_eligibility, label='anc_testing'),
     ]
 
     # ART
     data_path = sc.thispath() / 'data'
     n_art = pd.read_csv(data_path / 'n_art.csv').set_index('year')
-    art = sti.ART(coverage_data=n_art, future_coverage={'year': 2024, 'prop': 0.97})
+    n_art['p_art'] = np.nan
+    n_art.loc[2025:, 'p_art'] = 0.97  # Switch to proportion target after historical data ends
+    art = sti.ART(coverage=n_art)
 
     # PrEP
     prep = sti.Prep(
@@ -91,48 +99,12 @@ def make_custom_interventions(test_years=None):
     return testing + [art, prep]
 
 
-def make_sim_pars(sim, calib_pars):
-    """Apply calibration parameters to a simulation."""
-    if not sim.initialized: sim.init()
-    hiv = sim.diseases.hiv
-    nw = sim.networks.structuredsexual
-
-    for k, pars in calib_pars.items():
-        if k == 'rand_seed':
-            sim.pars.rand_seed = v
-            continue
-
-        elif k in ['index', 'mismatch']:
-            continue
-
-        if isinstance(pars, dict):
-            v = pars['value']
-        elif sc.isnumber(pars):
-            v = pars
-        else:
-            raise NotImplementedError(f'Parameter {k} not recognized')
-
-        if 'hiv_' in k:
-            k = k.replace('hiv_', '')
-            hiv.pars[k] = v
-        elif 'nw_' in k:
-            k = k.replace('nw_', '')
-            if 'pair_form' in k:
-                nw.pars[k].set(v)
-            else:
-                nw.pars[k] = v
-        else:
-            raise NotImplementedError(f'Parameter {k} not recognized')
-
-    return sim
-
-
 def make_sim(**kwargs):
     """
     Create a Kenya HIV simulation.
 
     Uses data_path to auto-load init_prev and condom_use data via DataLoader.
-    Custom interventions (testing, ART with future_coverage, PrEP) are created
+    Custom interventions (testing, ART with mixed-format coverage, PrEP) are created
     separately and merged with any user-provided interventions.
 
     Args:
@@ -164,26 +136,20 @@ def make_sim(**kwargs):
 
 def run_msim(use_calib=True, n_pars=1, do_save=True):
     """Run multiple simulations, optionally applying calibration parameters."""
-    calib = sc.loadobj('results/kenya_hiv_calib.obj') if use_calib else None
+    base = make_sim(verbose=-1)
 
-    sims = sc.autolist()
-    for par_idx in range(n_pars):
-        sim = make_sim(verbose=-1)
-        if use_calib:
-            calib_pars = calib.df.iloc[par_idx].to_dict()
-            sim.init()
-            sim = make_sim_pars(sim, calib_pars)
-            print(f'Using calibration parameters for index {par_idx}')
-        sim.par_idx = par_idx
-        sims += sim
-    sims = ss.parallel(sims).sims
+    if use_calib:
+        calib = sc.loadobj('results/kenya_hiv_calib.obj')
+        msim = sti.make_calib_sims(calib_pars=calib.df, sim=base, n_parsets=n_pars)
+    else:
+        msim = sti.make_calib_sims(calib_pars={}, sim=base, seeds_per_par=n_pars)
+    sims = msim.sims
 
     if do_save:
         dfs = sc.autolist()
         for sim in sims:
-            par_idx = sim.par_idx
             df = sim.to_df(resample='year', use_years=True, sep='.')
-            df['res_no'] = par_idx
+            df['res_no'] = sim.par_idx
             dfs += df
         df = pd.concat(dfs)
         sc.saveobj(f'results/msim.df', df)
@@ -250,8 +216,7 @@ if __name__ == '__main__':
             if use_calib:
                 calib = sc.loadobj('results/kenya_hiv_calib.obj')
                 calib_pars = calib.df.iloc[0].to_dict()
-                sim.init()
-                sim = make_sim_pars(sim, calib_pars)
+                sti.set_sim_pars(sim, calib_pars)
                 print('Using calibration parameters')
             sim.run()
             df = sim.to_df(resample='year', use_years=True, sep='.')
