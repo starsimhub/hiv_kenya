@@ -86,17 +86,16 @@ make_custom_interventions <- function(test_years = NULL) {
                 name = "low_cd4_testing", eligibility = low_cd4_eligibility, label = "low_cd4_testing")
   )
 
-  # ART — build coverage DataFrame in pure R then fix index type before passing to Python.
-  # Reticulate auto-converts pd$read_csv() results to R data.frame (breaking method chains),
-  # and converts R character row names back to a pandas string index (breaking year comparisons).
-  data_path    <- file.path(getwd(), "data")
-  n_art_r      <- read.csv(file.path(data_path, "n_art.csv"))
-  n_art_r$p_art <- NA_real_
-  n_art_r$p_art[n_art_r$year >= 2025L] <- 0.97
-  n_art        <- r_to_py(n_art_r)
-  n_art        <- n_art$set_index("year")
-  n_art$index  <- n_art$index$astype("int64")
-  art          <- sti$ART(coverage = n_art)
+  # ART — execute the DataFrame construction in Python to avoid reticulate type-conversion
+  # pitfalls (auto-convert to R data.frame, string index, etc.).
+  data_path <- file.path(getwd(), "data")
+  reticulate::py_run_string(paste0(
+    "import pandas as pd, numpy as np\n",
+    "_n_art = pd.read_csv('", file.path(data_path, "n_art.csv"), "').set_index('year')\n",
+    "_n_art['p_art'] = np.nan\n",
+    "_n_art.loc[2025:, 'p_art'] = 0.97\n"
+  ))
+  art <- sti$ART(coverage = reticulate::py$`_n_art`)
 
   # PrEP
   prep <- sti$Prep(
