@@ -88,10 +88,16 @@ make_custom_interventions <- function(test_years = NULL) {
 
   # ART: historical absolute counts, then proportion target from 2024 (STIsim 1.5.3+)
   data_path <- file.path(getwd(), "data")
-  art_cov <- read.csv(file.path(data_path, "n_art.csv"))
-  art_cov$p_art <- NA_real_
-  art_cov$p_art[art_cov$year >= 2024L] <- 0.97
-  art <- sti$ART(coverage = r_to_py(art_cov)$set_index("year"))
+  art_df <- read.csv(file.path(data_path, "n_art.csv"))
+  art_df <- art_df[!is.na(art_df$n_art), ]          # drop the empty 2024 stub row
+  art_df$p_art <- NA_real_
+  future <- data.frame(year = 2024L:2050L, n_art = NA_real_, p_art = 0.97)
+  art_df <- rbind(art_df, future)
+  art_cov <- pd$DataFrame(
+    list(n_art = art_df$n_art, p_art = art_df$p_art),
+    index = pd$Index(as.integer(art_df$year), name = "year")
+  )
+  art <- sti$ART(coverage = art_cov)
 
   # PrEP
   prep <- sti$Prep(
