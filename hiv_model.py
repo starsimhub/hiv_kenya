@@ -40,7 +40,7 @@ def make_custom_interventions(test_years=None):
     Create custom interventions for Kenya: HIV testing, ART, and PrEP.
 
     Note: ART is created here (rather than auto-loaded from art_coverage.csv)
-    to allow setting future_coverage.
+    to combine historical n_art counts with a projected p_art target from 2024.
 
     Args:
         test_years (array): Years for testing coverage. Default: 1990-2050.
@@ -76,10 +76,12 @@ def make_custom_interventions(test_years=None):
         sti.HIVTest(years=test_years, test_prob_data=low_cd4_prob, name='low_cd4_testing', eligibility=low_cd4_eligibility, label='low_cd4_testing'),
     ]
 
-    # ART
+    # ART: historical absolute counts, then proportion target from 2024 (STIsim 1.5.3+)
     data_path = sc.thispath() / 'data'
-    n_art = pd.read_csv(data_path / 'n_art.csv').set_index('year')
-    art = sti.ART(coverage_data=n_art, future_coverage={'year': 2024, 'prop': 0.97})
+    art_cov = pd.read_csv(data_path / 'n_art.csv').set_index('year')
+    art_cov['p_art'] = np.nan
+    art_cov.loc[2024:, 'p_art'] = 0.97
+    art = sti.ART(coverage=art_cov)
 
     # PrEP
     prep = sti.Prep(
