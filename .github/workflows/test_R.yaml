@@ -1,8 +1,6 @@
 name: R Tests
 
 on:
-  schedule:
-    - cron: '0 0 * * *'  # midnight UTC daily
   pull_request:
     branches: [main]
   workflow_dispatch:
