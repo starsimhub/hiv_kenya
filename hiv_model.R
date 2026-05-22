@@ -88,7 +88,7 @@ make_custom_interventions <- function(test_years = NULL) {
 
   # ART: historical absolute counts, then proportion target from 2024 (STIsim 1.5.3+)
   data_path <- file.path(getwd(), "data")
-  art_cov <- pd$read_csv(file.path(data_path, "n_art.csv"))$set_index("year")
+  art_cov <- pd$read_csv(file.path(data_path, "n_art.csv"))
   p_art <- rep(NA_real_, art_cov$shape[[1L]])
   p_art[art_cov$index >= 2024L] <- 0.97
   art_cov[["p_art"]] <- pd$Series(p_art, index = art_cov$index)
