@@ -1,6 +1,6 @@
 [project]
 name = "hiv_kenya"
-version = "0.1.0"
+version = "0.1.1"
 description = "HIV transmission model for Kenya based on Starsim"
 requires-python = ">=3.10"
 license = {file = "LICENSE"}
@@ -13,7 +13,7 @@ authors = [
 
 dependencies = [
     "starsim",
-    "stisim",
+    "stisim>=1.5.5",
     "sciris",
 ]
 
