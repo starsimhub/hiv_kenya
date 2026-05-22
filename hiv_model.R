@@ -46,7 +46,7 @@ make_custom_interventions <- function(test_years = NULL) {
   #' Create custom interventions for Kenya: HIV testing, ART, and PrEP.
   #'
   #' ART is created here (rather than auto-loaded from art_coverage.csv)
-  #' to allow setting future_coverage.
+  #' to combine historical n_art counts with a projected p_art target from 2024.
   #'
   #' @param test_years Integer vector of years for testing coverage. Default: 1990:2050.
   #' @return List of intervention instances.
@@ -86,10 +86,13 @@ make_custom_interventions <- function(test_years = NULL) {
                 name = "low_cd4_testing", eligibility = low_cd4_eligibility, label = "low_cd4_testing")
   )
 
-  # ART
+  # ART: historical absolute counts, then proportion target from 2024 (STIsim 1.5.3+)
   data_path <- file.path(getwd(), "data")
-  n_art <- pd$read_csv(file.path(data_path, "n_art.csv"))
-  art   <- sti$ART(coverage_data = n_art, future_coverage = list(year = 2024L, prop = 0.97))
+  art_cov <- pd$read_csv(file.path(data_path, "n_art.csv"))$set_index("year")
+  p_art <- rep(NA_real_, art_cov$shape[[1L]])
+  p_art[art_cov$index >= 2024L] <- 0.97
+  art_cov[["p_art"]] <- pd$Series(p_art, index = art_cov$index)
+  art   <- sti$ART(coverage = art_cov)
 
   # PrEP
   prep <- sti$Prep(
@@ -154,7 +157,6 @@ make_sim <- function(...) {
   #'
   #' Uses data_path to auto-load init_prev and condom_use data via DataLoader.
   #' Custom interventions (testing, ART with future_coverage, PrEP) are created
-
   #' separately and merged with any user-provided interventions.
   #'
   #' @param ... Override any Sim parameters (e.g. verbose, rand_seed, stop, analyzers, interventions).
