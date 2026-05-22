@@ -10,4 +10,4 @@ section "Python tests"
 pytest -v
 
 section "R tests"
-Rscript -e "testthat::test_dir('tests', stop_on_failure = TRUE)"
+Rscript -e "testthat::test_dir('.', stop_on_failure = TRUE)"
