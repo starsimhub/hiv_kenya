@@ -19,16 +19,28 @@ Root-level Python for a small sprint-scale project.
 
 ## State of play
 
-**Modernization in progress (branch `modernize`).** Bringing hiv_kenya
-up to the hiv_zambia pattern: dot-notation calibration parameters via
-stisim's `default_build_fn` (no custom `make_sim_pars`), interventions
-split into `interventions.py`, ZAMPHIA-aligned 5-year `age_bins` on
-`sti.HIV`. R interface and `sync-r-py` sync agent removed.
+**Modernization complete + first calibration (branch `modernize`, 2026-09-28).**
+- R interface removed (`hiv_model.R`, `plot_sims.R`, `install_R.sh`, `test_model.R`, `sync-r-py` sub-agent, R CI workflow).
+- Dot-notation calibration parameters routed via stisim's `default_build_fn` (no custom `make_sim_pars`).
+- Interventions split into `interventions.py` (FSW / general / low-CD4 HIV testing + ANC testing + ART with 2024+ 0.97 projection + PrEP).
+- 5-year `age_bins` on `sti.HIV`.
+- `plot_sims.py` rewritten to hiv_zambia's cleaner `_load_data` pattern (previous version read a non-existent `data/kenya_hiv_data.csv`).
 
-**Research question: TBD.** The current scope is calibration
-modernization + a first Optuna fit against `data/kenya_hiv_calib.csv`.
-Research question will be defined once a decent calibrated baseline is
-in place.
+**First calibration.** 1000-trial Optuna TPE (50 workers, ~5 min wall time), shrunk to top 500 draws. Mismatch of best trial: 21.77. Ensemble brackets UNAIDS at every panel (population, PLHIV, prevalence 15-49, new infections, HIV-related deaths, on ART) — see `figures/hiv_calib.png`. Posterior parameter summary:
+
+| Parameter                        | Mean  | 5%–95%       |
+|----------------------------------|-------|--------------|
+| `hiv.beta_m2f`                   | 0.012 | 0.011–0.013  |
+| `hiv.eff_condom`                 | 0.931 | 0.904–0.949  |
+| `structuredsexual.prop_f0`       | 0.573 | 0.550–0.603  |
+| `structuredsexual.prop_m0`       | 0.627 | 0.516–0.677  |
+| `structuredsexual.f1_conc`       | 0.103 | 0.031–0.151  |
+| `structuredsexual.m1_conc`       | 0.128 | 0.022–0.196  |
+| `structuredsexual.p_pair_form`   | 0.747 | 0.437–0.864  |
+
+`eff_condom` sits near the prior's upper edge — worth revisiting the range (currently 0.5–0.95) once a research question crystallises.
+
+**Research question: TBD.** Calibrated baseline is ready; the research question and downstream analysis will be scoped in a follow-up session.
 
 ## Intake
 
