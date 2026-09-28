@@ -12,8 +12,8 @@ authors = [
 ]
 
 dependencies = [
-    "starsim",
-    "stisim>=1.5.5",
+    "starsim @ git+https://github.com/starsimhub/starsim.git@rc3.6.1",
+    "stisim @ git+https://github.com/starsimhub/stisim.git@rc1.7.1",
     "sciris",
 ]
 
@@ -28,7 +28,7 @@ requires = ["setuptools>=64"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
-py-modules = ["hiv_model"]
+py-modules = ["hiv_model", "interventions", "utils", "plot_sims", "plot_calibrations"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
