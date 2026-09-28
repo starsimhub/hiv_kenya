@@ -12,8 +12,8 @@ authors = [
 ]
 
 dependencies = [
-    "starsim @ git+https://github.com/starsimhub/starsim.git@rc3.6.1",
-    "stisim @ git+https://github.com/starsimhub/stisim.git@rc1.7.1",
+    "starsim @ git+https://github.com/starsimhub/starsim.git@v3.6.1",
+    "stisim @ git+https://github.com/starsimhub/stisim.git@v1.6.2",
     "sciris",
 ]
 
