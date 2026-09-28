@@ -1,61 +1,80 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+Agent-based HIV transmission model for Kenya. Sibling project to
+`hiv_zambia`; same stisim base, same modernization pattern.
 
-## Commands
+See `README.md` for install and run instructions.
 
-```bash
-# Run the model (single sim)
-python hiv_model.py
+## Repo layout
 
-# Run tests (Python)
-cd tests && python test_model.py
+Root-level Python for a small sprint-scale project.
 
-# Run tests (R) -- from repo root
-Rscript tests/test_model.R
+- `hiv_model.py` — model builder
+- `interventions.py` — HIV testing (FSW / general population / low-CD4) + ART + PrEP
+- `run_hiv_calibration.py` — Optuna calibration entry point
+- `plot_sims.py` / `plot_calibrations.py` — figure scripts
+- `utils.py` — plotting helpers
+- `data/` — Kenya demography, condom use, ART counts, national HIV surveillance targets
+- `results/` — calibration + sim outputs (gitignored bulk; committable summaries only)
 
-# Run calibration (slow; use debug=True in the file for quick local runs)
-python run_hiv_calibration.py
+## State of play
 
-# Plot calibration results
-python plot_calibrations.py
-```
+**Modernization complete + first calibration (branch `modernize`, 2026-09-28).**
+- R interface removed (`hiv_model.R`, `plot_sims.R`, `install_R.sh`, `test_model.R`, `sync-r-py` sub-agent, R CI workflow).
+- Dot-notation calibration parameters routed via stisim's `default_build_fn` (no custom `make_sim_pars`).
+- Interventions split into `interventions.py` (FSW / general / low-CD4 HIV testing + ANC testing + ART with 2024+ 0.97 projection + PrEP).
+- 5-year `age_bins` on `sti.HIV`.
+- `plot_sims.py` rewritten to hiv_zambia's cleaner `_load_data` pattern (previous version read a non-existent `data/kenya_hiv_data.csv`).
 
-**Install dependencies:**
-```bash
-pip install starsim stisim sciris
-```
+**First calibration.** 1000-trial Optuna TPE (50 workers, ~5 min wall time), shrunk to top 500 draws. Mismatch of best trial: 21.77. Ensemble brackets UNAIDS at every panel (population, PLHIV, prevalence 15-49, new infections, HIV-related deaths, on ART) — see `figures/hiv_calib.png`. Posterior parameter summary:
 
-## Architecture
+| Parameter                        | Mean  | 5%–95%       |
+|----------------------------------|-------|--------------|
+| `hiv.beta_m2f`                   | 0.012 | 0.011–0.013  |
+| `hiv.eff_condom`                 | 0.931 | 0.904–0.949  |
+| `structuredsexual.prop_f0`       | 0.573 | 0.550–0.603  |
+| `structuredsexual.prop_m0`       | 0.627 | 0.516–0.677  |
+| `structuredsexual.f1_conc`       | 0.103 | 0.031–0.151  |
+| `structuredsexual.m1_conc`       | 0.128 | 0.022–0.196  |
+| `structuredsexual.p_pair_form`   | 0.747 | 0.437–0.864  |
 
-This is an agent-based HIV transmission model for Kenya, built on [STIsim](https://github.com/starsimhub/stisim)/[Starsim](https://github.com/starsimhub/starsim).
+`eff_condom` sits near the prior's upper edge — worth revisiting the range (currently 0.5–0.95) once a research question crystallises.
 
-### Core model (`hiv_model.py`)
+**Research question: TBD.** Calibrated baseline is ready; the research question and downstream analysis will be scoped in a follow-up session.
 
-- **`make_sim(**kwargs)`** — entry point; creates a `sti.Sim` configured for Kenya. Auto-loads `init_prev` and `condom_use` from `data/` via `DataLoader`. Custom interventions (testing, ART, PrEP) are always added, and user-provided `interventions`/`analyzers` kwargs are merged in.
-- **`make_custom_interventions()`** — builds FSW-targeted testing, general-population testing, low-CD4 opportunistic testing, ART (with future coverage), and PrEP. Testing coverage scales linearly from 1990 to 2020, then continues to 2050.
-- **`make_sim_pars(sim, calib_pars)`** — applies calibrated parameters to a sim; parameters prefixed `hiv_` route to `sim.diseases.hiv.pars`, those prefixed `nw_` route to `sim.networks.structuredsexual.pars`.
-- **`run_msim(use_calib, n_pars)`** — runs an ensemble via `ss.parallel()`, optionally applying rows from the calibration posterior.
-- **`save_stats(sims)`** — extracts age/sex stratified prevalence and incidence, plus SW stats, saving to `results/epi_df.df` and `results/sw_df.df`.
+## Intake
 
-### Calibration (`run_hiv_calibration.py`)
+**Model.** `sti.HIV` + `sti.StructuredSexual` (FSW-segmented) +
+`MaternalNet`, `demographics='kenya'`, 10k agents, 1985 start.
+Interventions: FSW / general-population / CD4 < 200 HIV testing arms
+with historical scale-up curves; ART with `n_art.csv` historical
+counts and a 0.97 projected proportion from 2024; PrEP scaling to 80%
+by 2025.
 
-Uses `sti.Calibration` (Optuna-based) to fit 7 parameters against UNAIDS/national data in `data/kenya_hiv_calib.csv`. Set `debug = True` at the top for a quick 2-trial local run. Outputs to `results/kenya_hiv_calib.obj`, `results/kenya_hiv_calib_stats.df`, and `results/kenya_hiv_par_stats.df`.
+**Question.** TBD. First deliverable is a calibrated baseline model
+ready to build a research question on top of.
 
-### R interface (`hiv_model.R`)
+**Data.** `data/kenya_hiv_calib.csv` (UNAIDS/national surveillance
+1990–2024) is the primary calibration target. Age × sex validation
+data (KENPHIA / KDHS) not yet incorporated — flagged as a next step
+once the research question requires it.
 
-Wraps the Python model via `reticulate`/`rstarsim`. All key Python functions (`make_sim`, `make_sim_pars`, `run_msim`, `save_stats`) have R equivalents. Results (sciris `.df` objects) are pandas DataFrames accessible in R via reticulate.
+**Constraints.** Solo (Robyn). End-of-day 2026-09-28 for the modernized
+model + first calibration.
 
-### Parameter naming convention
+## Environment
 
-Calibration parameters use prefixes that map to model components:
-- `hiv_*` → `sim.diseases.hiv.pars` (e.g., `hiv_beta_m2f`, `hiv_eff_condom`)
-- `nw_*` → `sim.networks.structuredsexual.pars` (e.g., `nw_prop_f0`, `nw_p_pair_form`)
+- stisim 1.7.0 (editable at `/home/robyn/stisim/`)
+- starsim 3.6.1
+- Python at `/home/robyn/miniconda/bin/python`; no conda env activation required
 
-### Results persistence
+## Conventions
 
-Simulation outputs are saved with `sc.saveobj()` as sciris binary objects (`.obj` or `.df` extension). Load with `sc.loadobj()`. DataFrames are resampled to yearly frequency via `sim.to_df(resample='year', use_years=True, sep='.')`.
+- Any modification to the editable `stisim` install is committed, pushed, and PR'd immediately per `stisim:editable-dep-hygiene`.
+- Downstream vs upstream decisions run through `stisim:extending-stisim` — real bugs go upstream; opt-in project knobs stay downstream.
+- Comment discipline in shared library code per `stisim:comment-hygiene` — no project-history in stisim source.
 
-### Syncing Python and R (`@sync-r-py`)
+## Related projects
 
-A Claude Code agent keeps `hiv_model.py` and `hiv_model.R` in sync. Invoke it by typing `@sync-r-py` in a Claude Code conversation. It will compare git histories, identify discrepancies, apply changes to the out-of-date file, and run tests.
+- [`hiv_zambia`](https://github.com/starsimhub/hiv_zambia) — sibling calibration + partner-notification analysis.
+- [`hiv_fp_kenya`](https://github.com/starsimhub/hiv_fp_kenya) — FPsim + STIsim postpartum "one-stop shop" demo. Distinct research track; no shared code with this repo.
